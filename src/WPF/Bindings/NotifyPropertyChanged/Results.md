@@ -1,4 +1,12 @@
-﻿``` ini
+﻿
+### To INotifyPropertyChanged or Not
+
+The results are not surprising. For the moment the WPF Runtime is written 
+to favour objects implementing INotifyPropertyChanged and in fact is almost
+2 times faster.
+
+
+``` ini
 
 BenchmarkDotNet=v0.12.1, OS=Windows 10.0.18363.720 (1909/November2018Update/19H2)
 Intel Core i7-8750H CPU 2.20GHz (Coffee Lake), 1 CPU, 12 logical and 6 physical cores
