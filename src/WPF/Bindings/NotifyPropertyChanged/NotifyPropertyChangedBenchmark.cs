@@ -2,19 +2,37 @@
 using System.ComponentModel;
 using System.Windows.Data;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Environments;
+using BenchmarkDotNet.Jobs;
 
 namespace WPF.Bindings.NotifyPropertyChanged
 {
     /// <summary>
     /// Lets see if binding to an object that has INotifyPropertyChanged is really faster
-    /// than binding to an object that doesn't have it. Will there be a memory leak?
+    /// than binding to an object that doesn't have it.
     /// </summary>
-    [MemoryDiagnoser]
-    [SimpleJob( warmupCount: 10, invocationCount: 30_000 )]
+    [Config( typeof( Config ) )]
     public class NotifyPropertyChangedBenchmark
     {
         private Binding _bindingPlain;
         private Binding _bindingObservable;
+
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                AddJob( Job.Dry.WithJit( Jit.RyuJit )
+                               .WithPlatform( Platform.X64 )
+                               .WithRuntime( CoreRuntime.Core31 )
+                               .WithStrategy( BenchmarkDotNet.Engines.RunStrategy.Monitoring )
+                               .WithWarmupCount( 10 )
+                               .WithInvocationCount( 50_000 ) );
+
+                AddDiagnoser( MemoryDiagnoser.Default );
+            }
+        }
 
 
         [Params( BindingMode.OneWay, BindingMode.OneTime )]
